@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Configuración de la conexión a Redis
 const redisClient = redis.createClient({
-  host: '3.90.61.35', // Reemplaza con la dirección IP de tu instancia de EC2
+  host: 'redis-server', // Reemplaza con la dirección IP de tu instancia de EC2
   port: 6379 // Reemplaza con el puerto que hayas elegido al ejecutar el contenedor de Redis
 });
 

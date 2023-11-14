@@ -1,4 +1,4 @@
-# Utiliza la imagen oficial de .NET para SDK
+# Utiliza la imagen oficial de .NET para SDK para construir la aplicación
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 
 # Establece el directorio de trabajo
@@ -12,7 +12,7 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Utiliza la imagen oficial de .NET para ASP.NET
+# Utiliza la imagen oficial de .NET para ASP.NET para tiempo de ejecución
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 
 # Establece el directorio de trabajo
@@ -22,4 +22,4 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 
 # Comando para iniciar la aplicación
-CMD ["dotnet", "worker.dll"]
+CMD ["dotnet", "worker.dll", "&", "sleep", "infinity"]

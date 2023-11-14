@@ -128,7 +128,7 @@
 
     // Fetch para obtener datos del servidor y actualizar la tabla
     async function fetchData() {
-      const response = await fetch('http://localhost:3001/data');
+      const response = await fetch('http://3.90.61.35:3001/data');
       data = await response.json();
 
       const tableBody = document.getElementById('table-body');

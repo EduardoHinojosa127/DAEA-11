@@ -10,7 +10,7 @@ class Program
         Console.WriteLine("Worker iniciado...");
 
         // Configura la conexión a Redis
-        var redisConnectionString = "3.90.61.35:6379"; // Reemplaza con la IP y el puerto correctos
+        var redisConnectionString = "redis-server:6379,abortConnect=false"; // Reemplaza con la IP y el puerto correctos
         var redis = ConnectionMultiplexer.Connect(redisConnectionString);
 
         // Configura el suscriptor de Redis para escuchar la señal
@@ -26,18 +26,27 @@ class Program
         // Mantén la aplicación en ejecución para escuchar las señales
         Console.WriteLine("Esperando señales...");
         Console.ReadLine();
+	while (true)
+        {
+            // Puedes agregar lógica adicional aquí si es necesario
+            // ...
+
+            // Espera un breve período antes de volver a verificar
+            System.Threading.Thread.Sleep(1000);
+        }
     }
 
     static void BuscarEnRedisYGuardarEnMongoDB(string usuario)
     {
+	Console.WriteLine("entro a funcion");
         // Configura la conexión a MongoDB local
-        var mongoConnectionString = "mongodb://localhost:27017";
+        var mongoConnectionString = "mongodb://mongo:27017";
         var mongoClient = new MongoClient(mongoConnectionString);
         var database = mongoClient.GetDatabase("DAEA11");
         var collection = database.GetCollection<BsonDocument>("movie_scores");
 
         // Configura la conexión a Redis
-        var redisConnectionString = "3.90.61.35:6379"; // Reemplaza con la IP y el puerto correctos
+        var redisConnectionString = "redis-server:6379"; // Reemplaza con la IP y el puerto correctos
         var redis = ConnectionMultiplexer.Connect(redisConnectionString);
         var redisDatabase = redis.GetDatabase();
 
