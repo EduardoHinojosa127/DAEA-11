@@ -18,32 +18,25 @@ const movieScoreSchema = new mongoose.Schema({
 
 const MovieScore = mongoose.model('MovieScore', movieScoreSchema);
 
-// Servir archivos estáticos desde el directorio actual
-app.use(express.static(path.join(__dirname)));
-
-// Ruta para obtener datos de MongoDB
-// Ruta para obtener datos de MongoDB
-app.get('/data', async (req, res) => {
-    try {
-      const db = mongoose.connection.db;
-      const collection = db.collection('movie_scores');
-  
-      // Realiza la consulta directamente en la colección 'movie_scores'
-      const movieScores = await collection.find({}, { _id: 0, __v: 0 }).toArray();
-  
-      console.log('Datos obtenidos de MongoDB:', movieScores);
-      res.json(movieScores);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error interno del servidor');
-    }
-  });
-  
-
 // Ruta para la página principal
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get('/', async (req, res) => {
+  try {
+    // Obtén los datos de MongoDB
+    const db = mongoose.connection.db;
+    const collection = db.collection('movie_scores');
+    const movieScores = await collection.find({}, { _id: 0, __v: 0 }).toArray();
+
+    // Renderiza la página y pasa los datos como contexto
+    res.render('index', { movieScores });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
 });
+
+// Configuración de la vista y el directorio público
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs'); // Puedes usar otro motor de plantillas si prefieres
 
 // Iniciar el servidor
 app.listen(port, () => {
