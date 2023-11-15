@@ -54,6 +54,8 @@
             <select id="distanceType" name="distanceType" class="form-select">
                 <option value="manhattan">Manhattan</option>
                 <option value="euclidean">Euclidiana</option>
+		<option value="pearson">Pearson</option>
+                <option value="cosine">Cosenos</option>
             </select>
         </div>
 
@@ -97,7 +99,70 @@
   
       return Math.abs(pel1 + pel2 + pel3);
     }
-  
+	
+    function pearson(user1, user2) {
+      const ratings1 = getMovieRatings(user1);
+      const ratings2 = getMovieRatings(user2);
+
+      if (!ratings1 || !ratings2) {
+        return null; // Al menos un usuario no encontrado
+      }
+
+      // Calcular medias
+      const med1 = (ratings1.pelicula1 + ratings1.pelicula2 + ratings1.pelicula3) / 3;
+      const med2 = (ratings2.pelicula1 + ratings2.pelicula2 + ratings2.pelicula3) / 3;
+
+      // Calcular numerador y denominador
+      let numerador = 0;
+      let denominador1 = 0;
+      let denominador2 = 0;
+
+      for (const key of ["pelicula1", "pelicula2", "pelicula3"]) {
+        const diff1 = ratings1[key] - med1;
+        const diff2 = ratings2[key] - med2;
+
+        numerador += diff1 * diff2;
+        denominador1 += diff1 ** 2;
+        denominador2 += diff2 ** 2;
+      }
+
+      // Calcular coeficiente de correlación de Pearson
+      const denominador = Math.sqrt(denominador1 * denominador2);
+      if (denominador === 0) {
+        // Manejar el caso de denominador igual a cero para evitar la división por cero
+        return 0;
+      }
+
+      const pearsonCoefficient = numerador / denominador;
+      return pearsonCoefficient;
+    }
+
+    function cosineSimilarity(user1, user2) {
+      const ratings1 = getMovieRatings(user1);
+      const ratings2 = getMovieRatings(user2);
+
+      if (!ratings1 || !ratings2) {
+        return null; // Al menos un usuario no encontrado
+      }
+
+      const numerator = ratings1.pelicula1 * ratings2.pelicula1 +
+                        ratings1.pelicula2 * ratings2.pelicula2 +
+                        ratings1.pelicula3 * ratings2.pelicula3;
+
+      const denominator = Math.sqrt(
+        Math.pow(ratings1.pelicula1, 2) + Math.pow(ratings1.pelicula2, 2) + Math.pow(ratings1.pelicula3, 2)
+      ) * Math.sqrt(
+        Math.pow(ratings2.pelicula1, 2) + Math.pow(ratings2.pelicula2, 2) + Math.pow(ratings2.pelicula3, 2)
+      );
+
+      if (denominator === 0) {
+        return 0; // Evitar división por cero
+      }
+
+      const similarity = numerator / denominator;
+      return similarity;
+    }   
+ 
     // Función para calcular la distancia euclidiana entre dos usuarios
     function euclideanDistance(user1, user2) {
       const ratings1 = getMovieRatings(user1);
@@ -125,8 +190,15 @@
       let distance;
       if (distanceType === 'manhattan') {
         distance = manhattanDistance(user1, user2);
-      } else {
+      } else if (distanceType === 'euclidean') {
         distance = euclideanDistance(user1, user2);
+      } else if (distanceType === 'pearson') {
+        distance = pearson(user1, user2);
+      } else if (distanceType === 'cosine') {
+        distance = cosineSimilarity(user1, user2);
+      } else {
+        // Manejar otros tipos de distancia si es necesario
+        distance = 0;
       }
   
       distance = distance.toFixed(4);
