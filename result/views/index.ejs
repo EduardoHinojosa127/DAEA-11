@@ -30,6 +30,8 @@
           <td><%= entry.pelicula1 %></td>
           <td><%= entry.pelicula2 %></td>
           <td><%= entry.pelicula3 %></td>
+          <td><%= entry.pelicula4 %></td>
+          <td><%= entry.pelicula5 %></td>
         </tr>
       <% }); %>
     </tbody>
@@ -181,12 +183,16 @@ function getCsvMovieRatings(usuario) {
         pelicula1: parseInt(ratings1.pelicula1),
         pelicula2: parseInt(ratings1.pelicula2),
         pelicula3: parseInt(ratings1.pelicula3),
+        pelicula4: parseInt(ratings1.pelicula4),
+        pelicula5: parseInt(ratings1.pelicula5),
       };
 
       const numRatings2 = {
         pelicula1: parseInt(ratings2.pelicula1),
         pelicula2: parseInt(ratings2.pelicula2),
         pelicula3: parseInt(ratings2.pelicula3),
+        pelicula4: parseInt(ratings1.pelicula4),
+        pelicula5: parseInt(ratings1.pelicula5),
       };
 
       console.log('NumRatings1:', numRatings1);
@@ -195,7 +201,9 @@ function getCsvMovieRatings(usuario) {
       // Calcular la distancia euclidiana
       const squaredDifference = Math.pow((numRatings1.pelicula1 - numRatings2.pelicula1), 2) +
                               Math.pow((numRatings1.pelicula2 - numRatings2.pelicula2), 2) +
-                              Math.pow((numRatings1.pelicula3 - numRatings2.pelicula3), 2);
+                              Math.pow((numRatings1.pelicula3 - numRatings2.pelicula3), 2) + 
+                              Math.pow((numRatings1.pelicula4 - numRatings2.pelicula4), 2) + 
+                              Math.pow((numRatings1.pelicula5 - numRatings2.pelicula5), 2);
 
       const distance = Math.sqrt(squaredDifference);
 
@@ -220,12 +228,16 @@ function getCsvMovieRatings(usuario) {
         pelicula1: parseInt(ratings1.pelicula1),
         pelicula2: parseInt(ratings1.pelicula2),
         pelicula3: parseInt(ratings1.pelicula3),
+        pelicula4: parseInt(ratings1.pelicula4),
+        pelicula5: parseInt(ratings1.pelicula5),
       };
 
       const numRatings2 = {
         pelicula1: parseInt(ratings2.pelicula1),
         pelicula2: parseInt(ratings2.pelicula2),
         pelicula3: parseInt(ratings2.pelicula3),
+        pelicula4: parseInt(ratings2.pelicula4),
+        pelicula5: parseInt(ratings2.pelicula5),
       };
 
       console.log('NumRatings1:', numRatings1);
@@ -234,7 +246,9 @@ function getCsvMovieRatings(usuario) {
       // Calcular la distancia euclidiana
       const squaredDifference = Math.pow((numRatings1.pelicula1 - numRatings2.pelicula1), 2) +
                               Math.pow((numRatings1.pelicula2 - numRatings2.pelicula2), 2) +
-                              Math.pow((numRatings1.pelicula3 - numRatings2.pelicula3), 2);
+                              Math.pow((numRatings1.pelicula3 - numRatings2.pelicula3), 2) + 
+                              Math.pow((numRatings1.pelicula4 - numRatings2.pelicula4), 2) + 
+                              Math.pow((numRatings1.pelicula5 - numRatings2.pelicula5), 2);
 
       const distance = Math.sqrt(squaredDifference);
 

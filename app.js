@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 
 // Ruta para manejar las valoraciones enviadas por el formulario
 app.post('/valorar', (req, res) => {
-  const { usuario, pelicula1, pelicula2, pelicula3 } = req.body;
+  const { usuario, pelicula1, pelicula2, pelicula3, pelicula4, pelicula5 } = req.body;
 
   // Agrega registros de consola para imprimir el contenido del JSON
   console.log('JSON recibido:', req.body);
@@ -42,7 +42,9 @@ app.post('/valorar', (req, res) => {
   redisClient.hmset(usuario, {
     'pelicula1': pelicula1,
     'pelicula2': pelicula2,
-    'pelicula3': pelicula3
+    'pelicula3': pelicula3,
+    'pelicula4': pelicula4,
+    'pelicula5': pelicula5
   }, (err) => {
     if (err) {
       console.error(`Error al guardar las valoraciones en Redis: ${err}`);

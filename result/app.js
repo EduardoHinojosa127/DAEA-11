@@ -8,36 +8,30 @@ const app = express();
 const port = 3001;
 
 // Conexión a MongoDB
-mongoose.connect('mongodb://0.0.0.0:27017/DAEA11', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://mongo:27017/DAEA11', { useNewUrlParser: true, useUnifiedTopology: true });
 
 let movieCsv = []; // Variable global para almacenar los datos del CSV
 
 // Función para leer el archivo CSV de manera asíncrona
-async function readCsvFile(filePath) {
+// Función para leer el archivo JSON de manera asíncrona
+async function readJsonFile(filePath) {
   try {
-    const csvData = await fs.readFile(filePath, 'utf-8');
-    return new Promise((resolve, reject) => {
-      parse(csvData, { columns: true }, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    const jsonData = await fs.readFile(filePath, 'utf-8');
+    return JSON.parse(jsonData);
   } catch (error) {
     throw error;
   }
 }
 
+
 // Inicializar la aplicación
 (async () => {
   try {
-    // Leer el archivo CSV de manera asíncrona al inicio de la aplicación
-    movieCsv = await readCsvFile('./data.csv');
-    console.log('Datos del CSV cargados exitosamente');
+    // Leer el archivo JSON de manera asíncrona al inicio de la aplicación
+    movieCsv = await readJsonFile('./data.json');
+    console.log('Datos del JSON cargados exitosamente');
   } catch (error) {
-    console.error('Error al cargar los datos del CSV:', error);
+    console.error('Error al cargar los datos del JSON:', error);
   }
 
   // Definición del esquema de la colección
@@ -46,6 +40,8 @@ async function readCsvFile(filePath) {
     pelicula1: String,
     pelicula2: String,
     pelicula3: String,
+    pelicula4: String,
+    pelicula5: String,
   });
 
   const MovieScore = mongoose.model('MovieScore', movieScoreSchema);

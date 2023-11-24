@@ -54,6 +54,8 @@ class Program
         var pelicula1 = redisDatabase.HashGet(usuario, "pelicula1");
         var pelicula2 = redisDatabase.HashGet(usuario, "pelicula2");
         var pelicula3 = redisDatabase.HashGet(usuario, "pelicula3");
+        var pelicula4 = redisDatabase.HashGet(usuario, "pelicula4");
+        var pelicula5 = redisDatabase.HashGet(usuario, "pelicula5");
 
         // Crear el filtro para buscar el documento existente por usuario
         var filter = Builders<BsonDocument>.Filter.Eq("usuario", usuario);
@@ -64,7 +66,9 @@ class Program
             { "usuario", usuario },
             { "pelicula1", pelicula1.ToString() }, // Convertir a string
             { "pelicula2", pelicula2.ToString() }, // Convertir a string
-            { "pelicula3", pelicula3.ToString() }  // Convertir a string
+            { "pelicula3", pelicula3.ToString() },
+            { "pelicula4", pelicula4.ToString() },
+            { "pelicula5", pelicula5.ToString() }  // Convertir a string
         };
 
         // Reemplazar el documento existente o insertar uno nuevo
