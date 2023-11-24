@@ -1,12 +1,30 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
+const { parse } = require('csv-parse');
 
 const app = express();
 const port = 3001;
 
 // Conexión a MongoDB
-mongoose.connect('mongodb://mongo:27017/DAEA11', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://0.0.0.0:27017/DAEA11', { useNewUrlParser: true, useUnifiedTopology: true });
+
+let movieCsv = []; // Variable global para almacenar los datos del CSV
+
+// Lee el archivo CSV al inicio de la aplicación
+const csvFilePath = './data.csv';
+const csvData = fs.readFileSync(csvFilePath, 'utf-8');
+parse(csvData, { columns: true }, (err, data) => {
+  if (err) {
+    console.error('Error al analizar el archivo CSV:', err);
+  } else {
+    movieCsv = data;
+    console.log('Datos del CSV cargados exitosamente');
+  }
+});
+
+
 
 // Definición del esquema de la colección
 const movieScoreSchema = new mongoose.Schema({
@@ -27,7 +45,7 @@ app.get('/', async (req, res) => {
     const movieScores = await collection.find({}, { _id: 0, __v: 0 }).toArray();
 
     // Renderiza la página y pasa los datos como contexto
-    res.render('index', { movieScores });
+    res.render('index', { movieScores, movieCsv });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error interno del servidor');

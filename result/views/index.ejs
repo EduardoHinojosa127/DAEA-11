@@ -12,7 +12,7 @@
     }
   </style>
 </head>
-<body data-movie-scores='<%= JSON.stringify(movieScores || []) %>'>
+<body data-movie-scores='<%= JSON.stringify(movieScores || []) %>' data-csv-data='<%= JSON.stringify(movieCsv || []) %>'>
   <h1 class="mt-4 mb-4">Tabla de Resultados</h1>
   <table class="table table-bordered">
     <thead class="table-light">
@@ -60,9 +60,11 @@
         </div>
 
         <button type="button" onclick="calculateDistance()" class="btn btn-primary">Calcular Distancia</button>
+        <button type="button" onclick="findNearestNeighbor()" class="btn btn-primary">Calcular Distancia y Recomendar</button>
     </form>
 
     <div id="result" class="mt-4"></div>
+    <div id="result2" class="mt-4"></div>
 
   <!-- Resto del contenido según sea necesario -->
 
@@ -71,19 +73,18 @@
 </body>
 <script>
     // Función para obtener las calificaciones de películas de un usuario
-    function getMovieRatings(usuario) {
-      const userData = movieScores.find(entry => entry.usuario === usuario);
-      if (userData) {
-        return {
-          pelicula1: parseInt(userData.pelicula1),
-          pelicula2: parseInt(userData.pelicula2),
-          pelicula3: parseInt(userData.pelicula3),
-        };
-      } else {
-        return null; // Usuario no encontrado
-      }
-    }
-  
+    // Función para obtener las calificaciones de películas de un usuario en MongoDB
+function getMovieRatings(usuario) {
+  const userData = movieScores.find(entry => entry.usuario === usuario);
+  return userData ? userData : {};
+}
+
+// Función para obtener las calificaciones de películas de un usuario en el CSV
+function getCsvMovieRatings(usuario) {
+  const userData = movieCsv.find(entry => entry.usuario === usuario);
+  return userData ? userData : {};
+}
+
     // Función para calcular la distancia de Manhattan entre dos usuarios
     function manhattanDistance(user1, user2) {
       const ratings1 = getMovieRatings(user1);
@@ -167,19 +168,82 @@
     function euclideanDistance(user1, user2) {
       const ratings1 = getMovieRatings(user1);
       const ratings2 = getMovieRatings(user2);
-  
+
+      console.log('User1:', user1, 'Ratings1:', ratings1);
+      console.log('User2:', user2, 'Ratings2:', ratings2);
+
       if (!ratings1 || !ratings2) {
         return null; // Al menos un usuario no encontrado
       }
-  
-      const pel1 = Math.pow((ratings1.pelicula1 - ratings2.pelicula1), 2);
-      const pel2 = Math.pow((ratings1.pelicula2 - ratings2.pelicula2), 2);
-      const pel3 = Math.pow((ratings1.pelicula3 - ratings2.pelicula3), 2);
-  
-      const squaredDifference = Math.pow((pel1 + pel2 + pel3), 1/2);
-      return squaredDifference;
+
+      // Convertir calificaciones a números
+      const numRatings1 = {
+        pelicula1: parseInt(ratings1.pelicula1),
+        pelicula2: parseInt(ratings1.pelicula2),
+        pelicula3: parseInt(ratings1.pelicula3),
+      };
+
+      const numRatings2 = {
+        pelicula1: parseInt(ratings2.pelicula1),
+        pelicula2: parseInt(ratings2.pelicula2),
+        pelicula3: parseInt(ratings2.pelicula3),
+      };
+
+      console.log('NumRatings1:', numRatings1);
+      console.log('NumRatings2:', numRatings2);
+
+      // Calcular la distancia euclidiana
+      const squaredDifference = Math.pow((numRatings1.pelicula1 - numRatings2.pelicula1), 2) +
+                              Math.pow((numRatings1.pelicula2 - numRatings2.pelicula2), 2) +
+                              Math.pow((numRatings1.pelicula3 - numRatings2.pelicula3), 2);
+
+      const distance = Math.sqrt(squaredDifference);
+
+      console.log('Distancia Euclidiana entre', user1, 'y', user2, ':', distance);
+
+      return distance;
     }
-  
+
+    function euclideanDistance2(user1, user2) {
+      const ratings1 = getMovieRatings(user1);
+      const ratings2 = getCsvMovieRatings(user2);
+
+      console.log('User1:', user1, 'Ratings1:', ratings1);
+      console.log('User2:', user2, 'Ratings2:', ratings2);
+
+      if (!ratings1 || !ratings2) {
+        return null; // Al menos un usuario no encontrado
+      }
+
+      // Convertir calificaciones a números
+      const numRatings1 = {
+        pelicula1: parseInt(ratings1.pelicula1),
+        pelicula2: parseInt(ratings1.pelicula2),
+        pelicula3: parseInt(ratings1.pelicula3),
+      };
+
+      const numRatings2 = {
+        pelicula1: parseInt(ratings2.pelicula1),
+        pelicula2: parseInt(ratings2.pelicula2),
+        pelicula3: parseInt(ratings2.pelicula3),
+      };
+
+      console.log('NumRatings1:', numRatings1);
+      console.log('NumRatings2:', numRatings2);
+
+      // Calcular la distancia euclidiana
+      const squaredDifference = Math.pow((numRatings1.pelicula1 - numRatings2.pelicula1), 2) +
+                              Math.pow((numRatings1.pelicula2 - numRatings2.pelicula2), 2) +
+                              Math.pow((numRatings1.pelicula3 - numRatings2.pelicula3), 2);
+
+      const distance = Math.sqrt(squaredDifference);
+
+      console.log('Distancia Euclidiana entre', user1, 'y', user2, ':', distance);
+
+      return distance;
+    }
+
+
     // Función para calcular la distancia y mostrar el resultado
     function calculateDistance() {
       const user1 = document.getElementById('user1').value;
@@ -207,7 +271,8 @@
       resultDiv.innerHTML = `<p>Distancia ${distanceType} entre ${user1} y ${user2}: ${distance}</p>`;
     }
 
-    var movieScores = JSON.parse(document.body.getAttribute('data-movie-scores'))
+    var movieScores = JSON.parse(document.body.getAttribute('data-movie-scores'));
+    var movieCsv = JSON.parse(document.body.getAttribute('data-csv-data'));
 
     function fillComboBoxes() {
         const userSelects = document.querySelectorAll('select[name^="user"]');
@@ -222,8 +287,78 @@
         });
     }
 
+    function findNearestNeighbor() {
+  const user1 = document.getElementById('user1').value.trim();
+
+  // Obtener las calificaciones del usuario en MongoDB
+  const ratings1 = getMovieRatings(user1);
+
+  if (!ratings1) {
+    alert('Usuario no encontrado en MongoDB');
+    return;
+  }
+
+  // Inicializar variables para el vecino más cercano y la distancia mínima
+  let nearestNeighbor;
+  let minDistance = Infinity;
+
+  // Iterar sobre los usuarios en el CSV
+  movieCsv.forEach(entry => {
+    const user2 = entry.usuario.trim();
+
+    // No comparar con el mismo usuario
+    if (user1 === user2) {
+      return;
+    }
+
+    // Obtener las calificaciones del usuario en el CSV
+    const ratings2 = getCsvMovieRatings(user2);
+
+    // Calcular la distancia Euclidiana solo para las primeras tres películas
+    const distance = euclideanDistance2(user1, user2);
+
+    console.log(`Distancia entre ${user1} y ${user2}: ${distance}`);
+
+    if (distance !== null && distance < minDistance) {
+      minDistance = distance;
+      nearestNeighbor = user2;
+    }
+  });
+
+  // Mostrar el resultado en la consola
+  console.log(`El vecino más cercano de ${user1} en el CSV es ${nearestNeighbor} con una distancia de ${minDistance}`);
+  console.log(`Calificaciones de ${user1} (MongoDB): ${JSON.stringify(ratings1)}`);
+  console.log(`Calificaciones del vecino más cercano (${nearestNeighbor}): ${JSON.stringify(getCsvMovieRatings(nearestNeighbor))}`);
+
+  const ratingsNeighbor = getCsvMovieRatings(nearestNeighbor);
+
+// Encontrar la película con la calificación más alta entre las películas 4, 5 y 6
+const peliculas456 = ["pelicula4", "pelicula5", "pelicula6"];
+let maxPeliculaNeighbor = peliculas456[0];
+
+for (let i = 1; i < peliculas456.length; i++) {
+  const pelicula = peliculas456[i];
+
+  if (ratingsNeighbor[pelicula] > ratingsNeighbor[maxPeliculaNeighbor]) {
+    maxPeliculaNeighbor = pelicula;
+  }
+}
+
+// Mostrar la película con la calificación más alta en la consola
+console.log(`Película con la calificación más alta del vecino más cercano (${nearestNeighbor}): ${maxPeliculaNeighbor} con calificación ${ratingsNeighbor[maxPeliculaNeighbor]}`);
+const resultDiv = document.getElementById('result2');
+resultDiv.innerHTML = `<p>Película recomendada: ${maxPeliculaNeighbor}</p>`;
+}
+
+
+
+
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
         fillComboBoxes();
+        console.log(movieCsv);
     });
 
   </script>
