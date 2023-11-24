@@ -8,7 +8,7 @@ const app = express();
 const port = 3001;
 
 // Conexión a MongoDB
-mongoose.connect('mongodb://0.0.0.0:27017/DAEA11', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://mongo:27017/DAEA11', { useNewUrlParser: true, useUnifiedTopology: true });
 
 let movieCsv = []; // Variable global para almacenar los datos del CSV
 
